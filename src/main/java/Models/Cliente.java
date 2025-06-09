@@ -2,10 +2,13 @@ package Models;
 
 public class Cliente {
 
+    //El cliente tendrá los siguientes atributos
     private String nombre;
     private String direccion;
     private String telefono;
 
+
+    //Solo se necesitará un constructor completo, en principio.
     public Cliente(String nombre, String direccion, String telefono) {
         this.nombre = nombre;
         this.direccion = direccion;
@@ -36,6 +39,7 @@ public class Cliente {
         this.telefono = telefono;
     }
 
+    //Un metodo ver detalle para mostrar los datos.
     public String verDetalle() {
 
         return "Nombre: "

@@ -1,8 +1,9 @@
 package Models;
 
-
 public class Item {
 
+    //Los pedidos estarán compuestos por los items, que a su vez estarán compuestas por:
+    //Un producto, un tamaño si procede, una cantidad, un precio, y un total (cantidad * precio)
     private Producto producto;
     private TAMANIO tamanio;
     private byte cantidad;
@@ -15,6 +16,7 @@ public class Item {
         this.tamanio = tamanio;
         this.cantidad = cantidad;
         this.precio = precio;
+        total = cantidad * precio;
 
     }
 
@@ -22,6 +24,7 @@ public class Item {
         this.producto = producto;
         this.cantidad = cantidad;
         this.precio = precio;
+        total = cantidad * precio;
 
     }
 

@@ -1,6 +1,8 @@
 package Models;
 
 public enum Alergenos {
+    //Los 14 alérgenos obligatorios de poner en las cartas en España
+
     GLUTEN(1, "Gluten"),
     CRUSTACEOS(2, "Crustáceos"),
     HUEVOS(3,"Huevos"),

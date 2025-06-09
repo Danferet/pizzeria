@@ -2,6 +2,7 @@ package Models;
 
 public class Ingredientes {
 
+    //solo contará con el atributo nombre.
     private String nombre;
 
     public Ingredientes(String nombre){

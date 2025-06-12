@@ -10,6 +10,7 @@ public class Item {
     private float precio;
     private float total;
 
+    //Las pizzas tendraán el nombre del producto, un tamanio(nomral o familiar) una cantidad y un precio.
     public Item(Producto producto, TAMANIO tamanio, byte cantidad, float precio) {
 
         this.producto = producto;
@@ -20,6 +21,7 @@ public class Item {
 
     }
 
+    //Todos los demás productos tendrán los mismos atributos menos el tamanio
     public Item(Producto producto, byte cantidad, float precio) {
         this.producto = producto;
         this.cantidad = cantidad;

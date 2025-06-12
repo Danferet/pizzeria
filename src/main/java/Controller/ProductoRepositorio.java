@@ -1,22 +1,14 @@
 package Controller;
 
 import BBDD.Database;
-import Excepctions.TipoException;
 import Models.Producto;
 
 import javax.swing.*;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProductoRepositorio implements CrudRepositorio<Producto> {
-
-    //devolverá la conexión a la base de datos.
-    private Connection getConnection() throws SQLException {
-        return Database.getConnection();
-    }
 
     //Este metodo devolverá un mensaje por ventana emergente
     // dependiendo de si en los insert se puede o no insertar el dato en la BBDD
@@ -42,7 +34,7 @@ public class ProductoRepositorio implements CrudRepositorio<Producto> {
                     "(numero, nombre, tipo, precio, precioNormal, precioFamiliar) " +
                     "VALUES (?,?,?,?,?,?)";
 
-            try (PreparedStatement ps = getConnection().prepareStatement(sentencia)) {
+            try (PreparedStatement ps = Database.conectar().prepareStatement(sentencia)) {
 
                 ps.setString(1, "0");
                 ps.setString(2, producto.getNombre());
@@ -73,7 +65,7 @@ public class ProductoRepositorio implements CrudRepositorio<Producto> {
                     "(numero, nombre, tipo, precio, precioNormal, precioFamiliar) " +
                     "VALUES (?,?,?,?,?,?)";
 
-            try (PreparedStatement ps = getConnection().prepareStatement(sentencia)) {
+            try (PreparedStatement ps = Database.conectar().prepareStatement(sentencia)) {
 
                 ps.setString(1, producto.getNumero());
                 ps.setString(2, producto.getNombre());

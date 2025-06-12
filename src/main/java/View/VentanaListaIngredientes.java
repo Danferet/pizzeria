@@ -100,7 +100,7 @@ public class VentanaListaIngredientes extends JFrame {
     }
 
     private Connection getConnection() throws SQLException {
-        return Database.getConnection();
+        return Database.conectar();
     }
 
 }

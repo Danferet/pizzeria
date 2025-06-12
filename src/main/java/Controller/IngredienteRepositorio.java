@@ -14,7 +14,7 @@ import java.util.List;
 public class IngredienteRepositorio implements CrudRepositorio<Ingredientes> {
 
     public static Connection getConection() throws SQLException {
-        return Database.getConnection();
+        return Database.conectar();
 
     }
 

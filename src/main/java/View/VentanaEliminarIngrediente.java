@@ -128,7 +128,7 @@ public class VentanaEliminarIngrediente extends JFrame {
 
     //Metodo que devuelve mi conexión a la base de datos
     private Connection getConnection() throws SQLException {
-        return Database.getConnection();
+        return Database.conectar();
     }
 
     //obtenemos la lista de ingredientes de la BBDD y la metemos en una lista

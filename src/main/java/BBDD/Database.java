@@ -6,7 +6,8 @@ import java.sql.SQLException;
 
 public class Database {
 
-    public static Connection getConnection() throws SQLException{
+    //Creo un metodo que me devolverá la conexión en cualquier clase en la que lo implemente.
+    public static Connection conectar() throws SQLException{
 
         return DriverManager.getConnection("jdbc:sqlite:pizzeria.db");
 

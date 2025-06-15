@@ -9,6 +9,7 @@ public class VentanaElegirProducto extends JFrame {
 
     public VentanaElegirProducto() {
         setLayout(null);
+        setTitle("Elige entre pizza u otro tipo de producto");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
 

@@ -32,12 +32,8 @@ public class ProductosIngredientesRepositorio implements CrudRepositorio<Product
         }catch (SQLException sql){
             System.out.println(sql.getMessage());
         }
-        
+
     }
-
-
-
-
 
     @Override
     public List<ProductoIngrediente> listar() {

@@ -18,6 +18,7 @@ public class VentanaListaIngredientes extends JFrame {
     public VentanaListaIngredientes() {
 
         setLayout(null);
+        setTitle("Lista de ingredientes");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         setVisible(false);

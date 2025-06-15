@@ -1,52 +1,103 @@
 package Validaciones;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Validar {
 
-    public static boolean validarString(String palabra) {
+    private static Color inputError = new Color(193, 104, 123);
 
-        boolean correcto = true;
+    //Validación de nombres de productos, que no tienen numeros; o si está vacía.
+    public static boolean validarString(String imput) {
 
-        for (int i = 0; i < palabra.length(); i++) {
+        Pattern cadena = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$");
 
-            if (!Character.isLetter(palabra.charAt(i)) && palabra.charAt(i) != ' ' && palabra.isBlank()) {
-                correcto = false;
-                break;
-            }
+        Matcher m = cadena.matcher(imput);
 
-
-        }
-
-        return correcto;
+        return m.matches() || imput.isEmpty();
     }
 
+    //Toma el valor de validar Strings
+    // y dependiendo del caso colorea la ventana de imput de blanco (true) o de rojo (false)
+    public static void validarInputString(String imput, JTextField jtext) {
+
+        if (!Validar.validarString(imput)) {
+            jtext.setBackground(inputError);
+        } else {
+            jtext.setBackground(Color.WHITE);
+        }
+    }
+
+    //Valida un String + numeros 0-9 y campo vacío
     public static boolean validarPizza(String pizza) {
 
-        boolean correcto = true;
+        Pattern patronPizza = Pattern.compile("^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+(\\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+)*$");
 
-        for (int i = 0; i < pizza.length(); i++) {
+        Matcher m = patronPizza.matcher(pizza);
 
-            if (!Character.isAlphabetic(pizza.charAt(i))
-                    && !Character.isDigit(pizza.charAt(i))
-                    && pizza.charAt(i) != ' '
-                    && pizza.isBlank()) {
-
-                correcto = false;
-
-            }
-        }
-
-        return correcto;
+        return pizza.isEmpty() || m.matches();
     }
 
-    public static boolean validarPrecio(String precio){
+    //Torna rojo el campo si el formato no es válido, lo deja blanco si sí lo és, para cadena de validarPizza
+    public static void validarInputStringPizza(String imput, JTextField jtext) {
 
-        try{
+        if (!Validar.validarPizza(imput)) {
+            jtext.setBackground(inputError);
+        } else {
+            jtext.setBackground(Color.WHITE);
+        }
+    }
 
+    //Valida si es un float o vacío
+    public static boolean validarPrecio(String precio) {
+
+        boolean floatCorrecto = false;
+
+        try {
+
+            //Trata de pasar a float, si lo consigue, el metodo retornará true,
+            //de lo contrario, caerá en el catch y devolverá false
             Float.parseFloat(precio);
-                return true;
+            floatCorrecto = true;
 
-        }catch (NumberFormatException nfe){
-            return false;
+        } catch (NumberFormatException nfe) {
+            System.out.println("Error al convertir el input a tipo float.");
+        }
+
+        //También valorará que el campo no esté vacío
+        return floatCorrecto || precio.isEmpty();
+
+    }
+
+    //Torna rojo el campo si no es formato float
+    public static void validarInputFloat(String imput, JTextField jtext) {
+
+        if (!Validar.validarPrecio(imput)) {
+            jtext.setBackground(inputError);
+        } else {
+            jtext.setBackground(Color.WHITE);
+        }
+    }
+
+    //Valorará si lo que se introduce es un numero con formato Integer
+    public static boolean validarNumero(String numero) {
+
+        Pattern patronNumero = Pattern.compile("^(\\d+)*$");
+
+        Matcher m = patronNumero.matcher(numero);
+
+        return m.matches();
+    }
+
+    //Si no es el formato correcto tornará el campo rojo, si lo es, será blanco, para numero entero
+    public static void validarInputNumero(String imput, JTextField jtext) {
+
+        if (!Validar.validarNumero(imput)) {
+            jtext.setBackground(inputError);
+        } else {
+            jtext.setBackground(Color.WHITE);
         }
     }
 }

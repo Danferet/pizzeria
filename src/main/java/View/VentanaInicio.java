@@ -16,6 +16,8 @@ public class VentanaInicio extends JFrame {
     public VentanaInicio() {
 
         setLayout(null);
+        setTitle("Pizzería!!");
+        setIconImage(new ImageIcon("src/assets/img/icono.png").getImage());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setVisible(true);
@@ -35,7 +37,6 @@ public class VentanaInicio extends JFrame {
         add(panel);
         panel.setLayout(null);
         panel.setBounds(0,0,getWidth(),getHeight());
-
 
         agregarProducto.setBounds(50,50,200,50);
         agregarIngrediente.setBounds(300,50,200,50);
@@ -84,10 +85,7 @@ public class VentanaInicio extends JFrame {
                 VentanaListaIngredientes vli = new VentanaListaIngredientes();
                 vli.setVisible(true);
 
-
             }
         });
     }
-
-
 }

@@ -44,14 +44,14 @@ public class ProductoRepositorio implements CrudRepositorio<Producto> {
                 ps.setFloat(6, producto.getPrecioFamiliar());
 
                 int resutlado = ps.executeUpdate();
-
+/*
                 if (resutlado > 0) {
                     JOptionPane.showMessageDialog(null,
                             "El elemento "
                                     + producto.getNombre()
                                     + " se insertó en la tabla producto.");
                 }
-
+*/
             } catch (SQLException sql) {
                 System.err.println(sql.getMessage());
                 JOptionPane.showMessageDialog(null,
@@ -75,14 +75,14 @@ public class ProductoRepositorio implements CrudRepositorio<Producto> {
                 ps.setFloat(6, 0.0f);
 
                 int resutlado = ps.executeUpdate();
-
+/*
                 if (resutlado > 0) {
                     JOptionPane.showMessageDialog(null,
                             "El elemento "
                                     + producto.getNombre()
                                     + " se insertó en la tabla producto.");
                 }
-
+*/
             } catch (SQLException sql) {
                 System.err.println(sql.getMessage());
                 JOptionPane.showMessageDialog(null,

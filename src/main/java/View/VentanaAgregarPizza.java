@@ -1,18 +1,18 @@
 package View;
 
-import BBDD.Database;
-import Excepctions.NombreNoValidoException;
+import Controller.ProductoRepositorio;
+import Models.Producto;
 import Validaciones.Validar;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
+//Con esta ventana agregaremso el producto específico pizza
 public class VentanaAgregarPizza extends JFrame {
 
+    //Loa componenetes de la ventana serán los siguientes:
     JPanel panel = new JPanel();
     JLabel insertarNombre = new JLabel("Nombre nuevo producto:");
     JTextField inputNombre = new JTextField();
@@ -21,11 +21,14 @@ public class VentanaAgregarPizza extends JFrame {
     JLabel familiar = new JLabel("Familiar");
     JTextField inputPrecioFamiliar = new JTextField();
     JButton aceptar = new JButton("ACEPTAR");
-    JLabel mensajeError = new JLabel("");
+    static JLabel mensajeError = new JLabel("");
 
-    public VentanaAgregarPizza(){
+    //Características de tamaño y posición de la ventana
+    public VentanaAgregarPizza() {
 
         setLayout(null);
+        setTitle("Agregar una pizza.");
+        setIconImage(new ImageIcon("src/assets/img/icono.png").getImage());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         setVisible(false);
@@ -41,93 +44,141 @@ public class VentanaAgregarPizza extends JFrame {
 
     }
 
+    //Agrego los componentes y les doy posición y las características
     public void agregarComponentes() {
 
         add(panel);
-        panel.setBounds(0,0,getWidth(),getHeight());
+        panel.setBounds(0, 0, getWidth(), getHeight());
         panel.setLayout(null);
 
         insertarNombre.setBounds(20, 25, 150, 30);
-        inputNombre.setBounds(20,50,150,30);
-        normal.setBounds(190,25,50,30);
-        inputPrecioNormal.setBounds(190,50,50,30);
-        familiar.setBounds(260,25,50,30);
-        inputPrecioFamiliar.setBounds(260,50,50,30);
-        mensajeError.setBounds(20,90,400,60);
-        aceptar.setBounds(330,35,100,45);
-        aceptar.addActionListener(new ActionListener() {
+        inputNombre.setBounds(20, 50, 150, 30);
+        normal.setBounds(190, 25, 50, 30);
+        inputPrecioNormal.setBounds(190, 50, 50, 30);
+        familiar.setBounds(260, 25, 50, 30);
+        inputPrecioFamiliar.setBounds(260, 50, 50, 30);
+        mensajeError.setBounds(20, 90, 400, 60);
+        aceptar.setBounds(330, 35, 100, 45);
+
+        //Valorará si el dato introducido en la ventana es de tipo float, tornándose rojo de no ser así.
+        inputPrecioFamiliar.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void insertUpdate(DocumentEvent e) {
+                Validar.validarInputFloat(inputPrecioFamiliar.getText(), inputPrecioFamiliar);
 
-                boolean validarNombre = Validar.validarPizza(inputNombre.getText());
-                boolean validarNormal = Validar.validarPrecio(inputPrecioNormal.getText());
-                boolean validarFamiliar = Validar.validarPrecio(inputPrecioFamiliar.getText());
+            }
 
-                String insert = "INSERT INTO producto (numero, nombre, tipo, " +
-                        "precio, precioNormal,precioFamiliar) VALUES (?,?,?,?,?,?)";
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                Validar.validarInputFloat(inputPrecioFamiliar.getText(), inputPrecioFamiliar);
 
-                try(PreparedStatement ps = Database.conectar().prepareStatement(insert)){
+            }
 
-                    if(!validarNombre || !validarNormal || !validarFamiliar){
-
-                        throw new NombreNoValidoException("Debes introducir datos válidos");
-                    }
-
-                    ps.setString(1,"0");
-                    ps.setString(2,inputNombre.getText());
-                    ps.setString(3,"pizza");
-                    ps.setFloat(4,0.0f);
-                    ps.setFloat(5,Float.parseFloat(inputPrecioNormal.getText()));
-                    ps.setFloat(6,Float.parseFloat(inputPrecioFamiliar.getText()));
-
-                    int resultado = ps.executeUpdate();
-
-                    if(resultado>0){
-                        JOptionPane.showMessageDialog(
-                                VentanaAgregarPizza.this,
-                                "Producto insertado correctamente");
-                    }
-
-                    inputNombre.setText("");
-                    inputPrecioFamiliar.setText("");
-                    inputPrecioNormal.setText("");
-                    mensajeError.setText("");
-
-                }catch (SQLException sql){
-                    JOptionPane.showMessageDialog(
-                            VentanaAgregarPizza.this,
-                            "Ocurrió un error al insertar.");
-                }catch (NombreNoValidoException nnve){
-                    mensajeError.setText(nnve.getMessage());
-
-                }
-
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                Validar.validarInputFloat(inputPrecioFamiliar.getText(), inputPrecioFamiliar);
             }
         });
 
+        //Valorará si el dato introducido en al ventana es de tipo float, tornándose rojo de no ser así.
+        inputPrecioNormal.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                Validar.validarInputFloat(inputPrecioNormal.getText(), inputPrecioNormal);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                Validar.validarInputFloat(inputPrecioNormal.getText(), inputPrecioNormal);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                Validar.validarInputFloat(inputPrecioNormal.getText(), inputPrecioNormal);
+            }
+        });
+
+        //Valorará si tiene formato correcto de cadena de texto + números (4 quesos, por ejemplo).
+        //Si no lo cumple se tornará rojo. Estos métodos validar también tienen en cuenta los espacios
+        inputNombre.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+
+                Validar.validarInputStringPizza(inputNombre.getText(), inputNombre);
+
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+
+                Validar.validarInputStringPizza(inputNombre.getText(), inputNombre);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+
+                Validar.validarInputStringPizza(inputNombre.getText(), inputNombre);
+            }
+        });
+
+        //Al accionarse, si los datos introducidos en todos los campos tienen el formato correcto,
+        //se introducirá un nuevo producto en la base de datos con las características descritas
+        //en dichos campos
+        aceptar.addActionListener(e -> {
+
+            //Es necesario validar que los campos son correctos para no introducir datos erróneos
+            //Para ello se valida que cada tipo de dato introducido por el usuario corresponde
+            //con el dato que espera el programa.
+            boolean validarNombre = Validar.validarPizza(inputNombre.getText());
+            boolean validarNormal = Validar.validarPrecio(inputPrecioNormal.getText());
+            boolean validarFamiliar = Validar.validarPrecio(inputPrecioFamiliar.getText());
+
+            //Ahora en este condicional le pasamos que si algo no es correcto, nos envíe un mensaje de error
+            //Así, el usuario podrá cambiar los datos si es necesario
+            if (!validarNombre ||
+                    !validarNormal ||
+                    !validarFamiliar ||
+                    inputNombre.getText().trim().isEmpty() ||
+                    inputPrecioNormal.getText().trim().isEmpty() ||
+                    inputPrecioFamiliar.getText().trim().isEmpty()) {
+
+                //El mensaje de error
+                mensajeError.setForeground(Color.RED);
+                mensajeError.setText("Todos los campos deben ser válidos");
+                return;
+
+            }
+
+            //Si los datos están bien introducidos y hacemos clic, se instanciará un objeto de ProductoRepositorio
+            //que llamará al metodo crear, lo que añadirá el producto a la base de datos.
+            ProductoRepositorio pr = new ProductoRepositorio();
+
+            //las pizzas no tienen número, por lo que este se quedará como 0
+            pr.crear(new Producto("0",
+                    inputNombre.getText(),
+                    "pizza",
+                    0,
+                    Float.parseFloat(inputPrecioNormal.getText()),
+                    Float.parseFloat(inputPrecioFamiliar.getText())));
+
+            //Si se introduce en la base de datos sale mensaje de insertado correctamente en verde
+            //y podemos introducir una nueva pizza, dejando los campos vacíos para que sea más sencillo.
+            mensajeError.setForeground(Color.GREEN);
+            mensajeError.setText("Elemento insertado correctamente");
+            inputNombre.setText("");
+            inputPrecioFamiliar.setText("");
+            inputPrecioNormal.setText("");
+
+        });
+
+        //Se agregan los componentes al panel.
         panel.add(insertarNombre);
         panel.add(inputNombre);
         panel.add(normal);
         panel.add(inputPrecioNormal);
         panel.add(familiar);
         panel.add(inputPrecioFamiliar);
-        panel.add(aceptar);
         panel.add(mensajeError);
-
+        panel.add(aceptar);
     }
-
-    public String[] listaTipos(){
-
-        String[] listaTipos =
-                {"-Tipo-", "Bocadillo", "Entrepanes",
-                        "Smash", "Burger", "Compartir","Postre"};
-
-        return  listaTipos;
-    }
-
-
 }
-
-
-
-

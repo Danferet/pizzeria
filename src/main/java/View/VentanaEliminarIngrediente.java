@@ -39,6 +39,7 @@ public class VentanaEliminarIngrediente extends JFrame {
     public VentanaEliminarIngrediente() {
 
         setLayout(null);
+        setTitle("Eliminar ingredientes");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         setVisible(false);

@@ -18,6 +18,12 @@ public class VentanaAgregarIngrediente extends JFrame {
 
     private Ingredientes ingrediente;
 
+
+    JPanel panel = new JPanel();
+    JLabel titulo = new JLabel("Inserta el ingrediente que quieres añadir a la BBDD.");
+    JTextField input = new JTextField();
+    JButton aceptar = new JButton("ACEPTAR");
+
     public VentanaAgregarIngrediente() {
         setLayout(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -44,52 +50,47 @@ public class VentanaAgregarIngrediente extends JFrame {
 
         aceptar.setBounds(500, 20, 100, 50);
 
+        add(panel);
         panel.add(titulo);
-
         panel.add(input);
         panel.add(aceptar);
-        add(panel);
+
         input.setOpaque(true);
         panel.setOpaque(true);
 
         input.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                validarInput();
+
+                Validar.validarInputString(input.getText(),input);
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                validarInput();
+
+                Validar.validarInputString(input.getText(),input);
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                validarInput();
+
+                Validar.validarInputString(input.getText(),input);
             }
 
-            private void validarInput() {
 
-                String palabra = input.getText();
-
-                boolean validado = Validar.validarString(palabra);
-
-                if (!validado) {
-                    input.setBackground(new Color(193,104,123));
-                } else {
-                    input.setBackground(Color.WHITE);
-                }
-            }
         });
 
         aceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                // Obtengo el valor de lo que escribe el usuario en el input
                 String ingrediente = input.getText();
 
-                boolean valido = Validar.validarString(ingrediente);
+                //Valido si es una palabra válida
+                boolean valido = Validar.validarString(input.getText());
 
+                //Si no es válida, mando un mensaje de error
                 if (!valido) {
 
                     JOptionPane.showMessageDialog(
@@ -98,17 +99,21 @@ public class VentanaAgregarIngrediente extends JFrame {
                             "Error de validación",
                             JOptionPane.ERROR_MESSAGE);
 
+                //Si es válida, seguimos
                 }else{
 
+                    //Creo una instancia del repositorio de ingredientes
                     IngredienteRepositorio ri = new IngredienteRepositorio();
 
+                    //Consigo de la base de datos una lista de los ingredientes que ya tengo
                     List<Ingredientes> lista = ri.listar();
 
+                    //Miro si el ingrediente ya existe en mi lista del programa
                     boolean existe = false;
 
-                    for(int i = 0; i<lista.size(); i++){
+                    for (Ingredientes ingredientes : lista) {
 
-                        if(lista.get(i).getNombre().equalsIgnoreCase(ingrediente)){
+                        if (ingredientes.getNombre().equalsIgnoreCase(ingrediente)) {
 
                             existe = true;
                             break;
@@ -116,12 +121,16 @@ public class VentanaAgregarIngrediente extends JFrame {
 
                     }
 
+                    //Si no existe:
                     if(!existe) {
 
+                        //Añado el ingrediente a la lista
                         ri.crear(new Ingredientes(ingrediente));
 
+                    //Si existe:
                     }else {
 
+                        //Envío mensaje de error
                         JOptionPane.showMessageDialog(
                                 VentanaAgregarIngrediente.this,
                                 "El ingrediente ya está en la lista.",
@@ -129,14 +138,11 @@ public class VentanaAgregarIngrediente extends JFrame {
                                 JOptionPane.ERROR_MESSAGE);
 
                     }
+
+                    //vacío el input para que se pueda agregar un nuevo ingrediente más fácilmente
                     input.setText("");
                 }
             }
         });
     }
-
-    JPanel panel = new JPanel();
-    JLabel titulo = new JLabel("Inserta el ingrediente que quieres añadir a la BBDD.");
-    JTextField input = new JTextField();
-    JButton aceptar = new JButton("ACEPTAR");
 }

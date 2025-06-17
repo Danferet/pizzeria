@@ -5,8 +5,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+//Esta ventana será la primera del programa y la que muestra los botones para ir a las otras ventanas donde realizar
+//las diferentes acciones del programa
 public class VentanaInicio extends JFrame {
 
+    //Panel y botones. Cada botón abre una ventana distinta
     JPanel panel = new JPanel();
     JButton agregarProducto = new JButton("NUEVO PRODUCTO");
     JButton agregarIngrediente = new JButton("NUEVO INGREDIENTE");

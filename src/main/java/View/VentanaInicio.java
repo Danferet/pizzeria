@@ -2,8 +2,6 @@ package View;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 //Esta ventana será la primera del programa y la que muestra los botones para ir a las otras ventanas donde realizar
 //las diferentes acciones del programa
@@ -51,44 +49,41 @@ public class VentanaInicio extends JFrame {
         panel.add(eliminarIngrediente);
         panel.add(listaIngredientes);
 
-        agregarProducto.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        agregarProducto.setBorder(BorderFactory.createLineBorder(Color.darkGray,5));
+        agregarIngrediente.setBorder(BorderFactory.createLineBorder(Color.darkGray,5));
+        eliminarIngrediente.setBorder(BorderFactory.createLineBorder(Color.darkGray,5));
+        listaIngredientes.setBorder(BorderFactory.createLineBorder(Color.darkGray,5));
+
+        //Al pulsar este botón se nos abrirá una nueva ventana que nos dará a elegir qué tipo de producto insertar
+        agregarProducto.addActionListener(e-> {
 
                 VentanaElegirProducto vep = new VentanaElegirProducto();
                 vep.setVisible(true);
 
-            }
         });
 
-        agregarIngrediente.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        //Abrirá una ventana que nos permitirá agregar un ingrediente.
+        agregarIngrediente.addActionListener(event->{
 
                 VentanaAgregarIngrediente v2 = new VentanaAgregarIngrediente();
                 v2.setVisible(true);
 
-            }
         });
 
-        eliminarIngrediente.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        //Abrirá una ventana que nos permitirá eliminar un ingrediente.
+        eliminarIngrediente.addActionListener(event->{
 
                 VentanaEliminarIngrediente vei = new VentanaEliminarIngrediente();
                 vei.setVisible(true);
 
-            }
         });
 
-        listaIngredientes.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        //Abrirá una ventana que nos permitirá ver todos los ingredientes.
+        listaIngredientes.addActionListener(event->{
 
                 VentanaListaIngredientes vli = new VentanaListaIngredientes();
                 vli.setVisible(true);
 
-            }
         });
     }
 }

@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 //Con esta ventana agregaremso el producto específico pizza
 public class VentanaAgregarPizza extends JFrame {
@@ -32,6 +34,7 @@ public class VentanaAgregarPizza extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         setVisible(false);
+        setDefaultLookAndFeelDecorated(true);
 
         Toolkit tk = Toolkit.getDefaultToolkit();
         Dimension d = tk.getScreenSize();
@@ -124,7 +127,8 @@ public class VentanaAgregarPizza extends JFrame {
         //Al accionarse, si los datos introducidos en todos los campos tienen el formato correcto,
         //se introducirá un nuevo producto en la base de datos con las características descritas
         //en dichos campos
-        aceptar.addActionListener(e -> {
+
+        aceptar.addActionListener((event) -> {
 
             //Es necesario validar que los campos son correctos para no introducir datos erróneos
             //Para ello se valida que cada tipo de dato introducido por el usuario corresponde

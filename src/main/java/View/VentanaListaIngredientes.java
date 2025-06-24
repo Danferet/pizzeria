@@ -3,6 +3,9 @@ package View;
 import BBDD.Database;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,16 +14,21 @@ import java.util.List;
 
 public class VentanaListaIngredientes extends JFrame {
 
+    Container container;
+    JPanel panelTitulo = new JPanel();
     JPanel panel = new JPanel();
-    JTextPane texto = new JTextPane();
-
+    JLabel titulo = new JLabel("Lista de ingredientes");
 
     public VentanaListaIngredientes() {
 
-        setLayout(null);
-        setTitle("Lista de ingredientes");
+        super("Lista de ingredientes");
+        container = getContentPane();
+        container.setLayout(new BorderLayout());
+        container.add(panel,BorderLayout.CENTER);
+        container.add(panelTitulo, BorderLayout.NORTH);
+
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setResizable(false);
+        setResizable(true);
         setVisible(false);
         pack();
 
@@ -36,16 +44,17 @@ public class VentanaListaIngredientes extends JFrame {
 
     public void agregarComponentes() {
 
-        add(panel);
+        int totalIngredientes = obtenerLista().size();
+        int ladoTabla = obtenerlado(totalIngredientes);
 
-        panel.setBounds(0, 0, getWidth(), getHeight());
-        panel.setLayout(null);
-        panel.add(texto);
+        panelTitulo.add(titulo);
+        titulo.setFont(new Font("Serif", Font.PLAIN,25));
+        darTexto(obtenerLista());
 
-
-        texto.setText(darTexto(obtenerLista()));
-        texto.setBounds(10,10,getWidth(),getHeight());
-        texto.setFont(new Font("Arial", Font.PLAIN,20));
+        panel.setLayout(new GridLayout(ladoTabla,4,10,10));
+        Border bordePanelCentral = panel.getBorder();
+        Border margenes = new EmptyBorder(10,10,10,10);
+        panel.setBorder(new CompoundBorder(bordePanelCentral,margenes));
 
     }
 
@@ -73,35 +82,38 @@ public class VentanaListaIngredientes extends JFrame {
         return lista;
     }
 
-    public String darTexto(List<String> lista){
-
-        StringBuilder sb = new StringBuilder("Ingredientes disponibles para añadir a los productos:")
-                .append("\n\n");
+    public void darTexto(List<String> lista){
 
         for(int i = 0; i<lista.size();i++){
 
-            if(i == 0){
+            JLabel item = new JLabel(lista.get(i), SwingConstants.CENTER);
+            item.setBorder(BorderFactory.createLineBorder(Color.RED,2));
+            item.setFont(new Font("Arial", Font.BOLD,12));
+            item.setBackground(Color.blue);
 
-                sb.append(lista.get(i))
-                        .append(", ");
+            panel.add(item);
 
-            }else if(i == lista.size()-1){
-
-                sb.append(lista.get(i).toLowerCase())
-                        .append(".");
-
-            }else{
-
-                sb.append(lista.get(i).toLowerCase())
-                        .append(", ");
-            }
         }
-
-        return sb.toString();
     }
 
     private Connection getConnection() throws SQLException {
         return Database.conectar();
     }
 
+    private int obtenerlado(int total){
+
+        int lado = 0;
+
+        if(total / 4 == 0){
+
+            lado = total / 4;
+
+        }else{
+
+            lado = (total / 4) +1;
+
+        }
+
+        return lado;
+    }
 }

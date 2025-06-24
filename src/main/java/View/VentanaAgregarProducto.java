@@ -124,7 +124,7 @@ public class VentanaAgregarProducto extends JFrame {
 
         //El botón pondrá un elemento nuevo en la base de datos
         //si los campos están correctamente rellenos.
-        botonAgregar.addActionListener(e -> {
+        botonAgregar.addActionListener(event -> {
 
             //El tipo lo vamos a obtener del desplegable. Hay que pasar de object a String
             String tipo = Objects.requireNonNull(listaTipos.getSelectedItem()).toString();

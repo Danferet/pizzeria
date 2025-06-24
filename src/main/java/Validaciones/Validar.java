@@ -16,7 +16,7 @@ public class Validar {
 
         Matcher m = cadena.matcher(imput);
 
-        return m.matches() || imput.isEmpty();
+        return m.matches();
     }
 
     //Toma el valor de validar Strings

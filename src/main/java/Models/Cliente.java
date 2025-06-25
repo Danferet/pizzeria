@@ -4,15 +4,18 @@ public class Cliente {
 
     //El cliente tendrá los siguientes atributos
     private String nombre;
-    private String direccion;
     private String telefono;
-
+    private String direccion;
 
     //Solo se necesitará un constructor completo, en principio.
-    public Cliente(String nombre, String direccion, String telefono) {
+    public Cliente(String nombre, String telefono, String direccion) {
         this.nombre = nombre;
         this.direccion = direccion;
         this.telefono = telefono;
+    }
+
+    public Cliente() {
+
     }
 
     public String getNombre() {
@@ -45,10 +48,10 @@ public class Cliente {
         return "Nombre: "
                 + "."
                 + nombre
+                + "\nTeléfono: "
+                + telefono
                 + "\nDirección: "
                 + direccion
-                + "."
-                + "\nTeléfono: "
-                + telefono;
+                + ".";
     }
 }

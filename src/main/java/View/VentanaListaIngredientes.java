@@ -22,22 +22,7 @@ public class VentanaListaIngredientes extends JFrame {
     public VentanaListaIngredientes() {
 
         super("Lista de ingredientes");
-        container = getContentPane();
-        container.setLayout(new BorderLayout());
-        container.add(panel,BorderLayout.CENTER);
-        container.add(panelTitulo, BorderLayout.NORTH);
-
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setResizable(true);
-        setVisible(false);
-        pack();
-
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        Dimension d = tk.getScreenSize();
-        int alto = d.height;
-        int ancho = d.width;
-
-        setBounds(ancho / 4, alto / 4, ancho / 2, alto / 2);
+        configurarVentana();
         agregarComponentes();
 
     }
@@ -63,7 +48,7 @@ public class VentanaListaIngredientes extends JFrame {
         List<String> lista = new ArrayList<>();
         String sentencia = "SELECT nombre FROM ingrediente";
 
-        try (PreparedStatement ps = getConnection().prepareStatement(sentencia)) {
+        try (PreparedStatement ps = Database.conectar().prepareStatement(sentencia)) {
 
             ResultSet rs = ps.executeQuery();
 
@@ -96,24 +81,44 @@ public class VentanaListaIngredientes extends JFrame {
         }
     }
 
-    private Connection getConnection() throws SQLException {
-        return Database.conectar();
-    }
-
     private int obtenerlado(int total){
 
-        int lado = 0;
+        int lado;
 
-        if(total / 4 == 0){
+        if(total / 5 == 0){
 
-            lado = total / 4;
+            lado = total / 5;
 
         }else{
 
-            lado = (total / 4) +1;
+            lado = (total / 5) +1;
 
         }
 
         return lado;
     }
+
+    private void configurarVentana(){
+
+        container = getContentPane();
+        container.setLayout(new BorderLayout());
+        container.add(panel,BorderLayout.CENTER);
+        container.add(panelTitulo, BorderLayout.NORTH);
+
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setResizable(true);
+        setVisible(false);
+        pack();
+
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        Dimension d = tk.getScreenSize();
+        int alto = d.height;
+        int ancho = d.width;
+
+        setBounds(ancho / 4, alto / 4, ancho / 2, alto / 2);
+
+    }
+
+
+
 }

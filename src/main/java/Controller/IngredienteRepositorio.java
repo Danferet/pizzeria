@@ -23,7 +23,7 @@ public class IngredienteRepositorio implements CrudRepositorio<Ingredientes> {
 
         String sentencia = "INSERT INTO ingrediente (nombre) VALUES(?)";
 
-        try(PreparedStatement ps = getConection().prepareStatement(sentencia)){
+        try(PreparedStatement ps = Database.conectar().prepareStatement(sentencia)){
 
             ps.setString(1, ingredientes.getNombre());
 
@@ -35,7 +35,10 @@ public class IngredienteRepositorio implements CrudRepositorio<Ingredientes> {
             }
 
         }catch (SQLException sql){
-            System.err.println(sql.getMessage());
+            JOptionPane.showMessageDialog(null,
+                    "No se pudo acceder a la base de datos para agregar el ingrediente",
+                    "Error de inserción",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

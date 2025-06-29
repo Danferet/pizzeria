@@ -16,6 +16,7 @@ public class VentanaInicio extends JFrame {
     JButton eliminarIngrediente = new JButton("ELIMINAR INGREDIENTE");
     JButton listaIngredientes = new JButton("LISTA DE INGREDIENTES");
     JButton agregarCliente = new JButton("AGREGAR CLIENTE");
+    JButton pedido = new JButton("PEDIDO");
 
     public VentanaInicio() {
         super("Pizzería");
@@ -36,6 +37,7 @@ public class VentanaInicio extends JFrame {
         contenedor.add(eliminarIngrediente);
         contenedor.add(listaIngredientes);
         contenedor.add(agregarCliente);
+        contenedor.add(pedido);
 
         //Doy algún formato a los botones
         agregarProducto.setBorder(BorderFactory.createLineBorder(Color.darkGray, 5));
@@ -43,6 +45,7 @@ public class VentanaInicio extends JFrame {
         eliminarIngrediente.setBorder(BorderFactory.createLineBorder(Color.darkGray, 5));
         listaIngredientes.setBorder(BorderFactory.createLineBorder(Color.darkGray, 5));
         agregarCliente.setBorder(BorderFactory.createLineBorder(Color.darkGray, 5));
+        pedido.setBorder(BorderFactory.createLineBorder(Color.darkGray, 5));
 
         //Al pulsar este botón se nos abrirá una nueva ventana que nos dará a elegir qué tipo de producto insertar
         agregarProducto.addActionListener(e -> new VentanaElegirProducto().setVisible(true));
@@ -58,9 +61,11 @@ public class VentanaInicio extends JFrame {
 
         agregarCliente.addActionListener(event -> new VentanaAgregarCliente().setVisible(true));
 
+        pedido.addActionListener(event -> new VentanaPedido().setVisible(true));
     }
 
     private void configurarVentana() {
+
         contenedor = getContentPane();
         contenedor.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 50));
 

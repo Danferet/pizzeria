@@ -5,7 +5,9 @@ import Models.Producto;
 
 import javax.swing.*;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductoRepositorio implements CrudRepositorio<Producto> {
@@ -21,18 +23,17 @@ public class ProductoRepositorio implements CrudRepositorio<Producto> {
             JOptionPane.showMessageDialog(null,
                     "El producto no se añadió a la base de datos.");
         }
-
         return rs;
     }
 
     @Override
     public void crear(Producto producto) {
 
-        if (producto.getTipo().equalsIgnoreCase("pizza")) {
+        String sentencia = "INSERT INTO producto " +
+                "(numero, nombre, tipo, precio, precioNormal, precioFamiliar) " +
+                "VALUES (?,?,?,?,?,?)";
 
-            String sentencia = "INSERT INTO producto " +
-                    "(numero, nombre, tipo, precio, precioNormal, precioFamiliar) " +
-                    "VALUES (?,?,?,?,?,?)";
+        if (producto.getTipo().equalsIgnoreCase("pizza")) {
 
             try (PreparedStatement ps = Database.conectar().prepareStatement(sentencia)) {
 
@@ -44,26 +45,16 @@ public class ProductoRepositorio implements CrudRepositorio<Producto> {
                 ps.setFloat(6, producto.getPrecioFamiliar());
 
                 int resutlado = ps.executeUpdate();
-/*
-                if (resutlado > 0) {
-                    JOptionPane.showMessageDialog(null,
-                            "El elemento "
-                                    + producto.getNombre()
-                                    + " se insertó en la tabla producto.");
-                }
-*/
-            } catch (SQLException sql) {
-                System.err.println(sql.getMessage());
-                JOptionPane.showMessageDialog(null,
-                        "Error al insertar el producto");
 
+            } catch (SQLException sql) {
+                //System.err.println(sql.getMessage());
+                JOptionPane.showMessageDialog(null,
+                        "Error al insertar el producto",
+                        "Error de inserción",
+                        JOptionPane.ERROR_MESSAGE);
             }
 
         } else {
-
-            String sentencia = "INSERT INTO producto " +
-                    "(numero, nombre, tipo, precio, precioNormal, precioFamiliar) " +
-                    "VALUES (?,?,?,?,?,?)";
 
             try (PreparedStatement ps = Database.conectar().prepareStatement(sentencia)) {
 
@@ -74,20 +65,14 @@ public class ProductoRepositorio implements CrudRepositorio<Producto> {
                 ps.setFloat(5, 0.0f);
                 ps.setFloat(6, 0.0f);
 
-                int resutlado = ps.executeUpdate();
-/*
-                if (resutlado > 0) {
-                    JOptionPane.showMessageDialog(null,
-                            "El elemento "
-                                    + producto.getNombre()
-                                    + " se insertó en la tabla producto.");
-                }
-*/
-            } catch (SQLException sql) {
-                System.err.println(sql.getMessage());
-                JOptionPane.showMessageDialog(null,
-                        "Error al insertar el producto");
+                int resultado = ps.executeUpdate();
 
+            } catch (SQLException sql) {
+                //System.err.println(sql.getMessage());
+                JOptionPane.showMessageDialog(null,
+                        "Error al insertar el producto",
+                        "Error de inserción",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -95,6 +80,37 @@ public class ProductoRepositorio implements CrudRepositorio<Producto> {
     @Override
     public List<Producto> listar() {
         return List.of();
+    }
+
+    public List<Producto> listar(String tipo){
+
+        List<Producto> lista = new ArrayList<>();
+
+        String sentencia = "SELECT numero, nombre, tipo, precio, precioNormal, precioFamiliar " +
+                "FROM producto WHERE tipo = ?";
+
+        try(PreparedStatement ps = Database.conectar().prepareStatement(sentencia)){
+
+            ps.setString(1,tipo);
+
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+
+                Producto producto = new Producto(
+                        rs.getString("numero"),
+                        rs.getString("nombre"),
+                        rs.getString("tipo"),
+                        rs.getFloat("precio"),
+                        rs.getFloat("precioNormal"),
+                        rs.getFloat("precioFamiliar"));
+
+                lista.add(producto);
+            }
+        }catch (SQLException sql){
+            System.out.println(sql.getMessage());
+        }
+        return lista;
     }
 
     @Override

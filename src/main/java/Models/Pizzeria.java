@@ -6,6 +6,7 @@ public class Pizzeria {
     private final String direccion = "Plaza Don Tomás Galindo, Nº 3, 45270, Mocejón, Toledo";
     private final String cif = "123456789";
 
+
     public Pizzeria() {
     }
 
@@ -13,7 +14,7 @@ public class Pizzeria {
         return nombre;
     }
 
-    public String getDirección() {
+    public String getDireccion() {
         return direccion;
     }
 

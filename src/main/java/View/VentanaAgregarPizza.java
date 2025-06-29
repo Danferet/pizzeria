@@ -173,6 +173,15 @@ public class VentanaAgregarPizza extends JFrame {
             inputPrecioFamiliar.setText("");
             inputPrecioNormal.setText("");
 
+            Timer timer = new Timer(2000,e->{
+
+                mensajeError.setForeground(Color.BLACK);
+                mensajeError.setText("Puedes insertar un nuevo producto");
+
+            });
+            timer.setRepeats(false);
+            timer.start();
+
         });
 
         //Se agregan los componentes al panel.

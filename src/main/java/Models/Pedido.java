@@ -12,7 +12,8 @@ public class Pedido {
     /*
     Creo que el producto debería estar relacionado con el item,
     que tiene un producto, una cantidad, precio del producto y precio total (precio * cantidad)
-    Seguidamente el "Pedido" estaria relacionado con los items, teniendo una lista de estos últimos.
+    Seguidamente el "Pedido" estaría relacionado con los items, teniendo una lista de estos últimos.
+    También tendrá relación con el cliente, apareciendo el cliente en la factura o ticket
      */
 
     private List<Item> listaItems;
@@ -74,6 +75,8 @@ public class Pedido {
     }
 
     public String verDetalle(){
+
+
 
         StringBuilder sb = new StringBuilder(pizzeria.verDetalle()).
                 append("\n").

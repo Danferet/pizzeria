@@ -63,7 +63,10 @@ public class Validar {
             floatCorrecto = true;
 
         } catch (NumberFormatException nfe) {
-            System.out.println("Error al convertir el input a tipo float.");
+
+            if(!precio.isEmpty()) {
+                System.out.println("Error al convertir el input a tipo float.");
+            }
         }
 
         //También valorará que el campo no esté vacío

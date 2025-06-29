@@ -46,7 +46,6 @@ public class Cliente {
     public String verDetalle() {
 
         return "Nombre: "
-                + "."
                 + nombre
                 + "\nTeléfono: "
                 + telefono

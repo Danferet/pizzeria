@@ -3,7 +3,7 @@ package Models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Producto {
+public class Producto implements Comparable{
 
     private String numero;
     private String nombre;
@@ -151,22 +151,20 @@ public class Producto {
 
     }
 
-
     public String verDetalle() {
 
-        String detalle = "";
+        String detalle;
 
-        if (precio == 0){
+        if (tipo.equalsIgnoreCase("pizza")){
 
             StringBuilder sb = new StringBuilder(getNombre())
-                    .append("\n").append("Normal: ")
+                    .append("  ").append("Normal: ")
                     .append(getPrecioNormal())
                     .append("€    ")
                     .append("Familiar: ")
                     .append(getPrecioFamiliar())
                     .append("€\n")
                     .append(darLista())
-                    .append("€\n")
                     .append(darListaAlergenos());
 
             detalle = sb.toString();
@@ -180,12 +178,16 @@ public class Producto {
                     .append(getPrecio())
                     .append("€\n")
                     .append(darLista())
-                    .append("€\n")
                     .append(darListaAlergenos());
 
             detalle = sb.toString();
         }
 
         return detalle;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
     }
 }

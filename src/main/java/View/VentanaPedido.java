@@ -15,7 +15,6 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -43,12 +42,7 @@ public class VentanaPedido extends JFrame {
         agregarComponentes();
     }
 
-    private void agregarParteDeArriba() {
-
-    }
-
     private void agregarComponentes() {
-
 
         //Parte de arriba
         contenedor.setLayout(new BorderLayout());
@@ -61,16 +55,30 @@ public class VentanaPedido extends JFrame {
         panelTitulo.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panelTitulo.setBorder(BorderFactory.createLineBorder(Color.RED, 5));
 
-
-        //Los siguientes elementos son del panel de arriba a la izquierda!!
+        /*
+        Los siguientes elementos son del panel de arriba a la izquierda!!
+         */
 
         //Botón que nos mostrará como va el tiket en este momento.
         JButton cesta = new JButton("Cesta");
         panelTitulo.add(cesta, BorderLayout.EAST);
+        //Acción del botón:
+        cesta.addActionListener(e -> {
+
+            VentanaCesta vc = new VentanaCesta();
+            vc.setVisible(true);
+
+        });
 
         //Creo un botón que me reiniciará la cesta dejándola sin artículos
         JButton vaciarCesta = new JButton("Vaciar Cesta");
         panelTitulo.add(vaciarCesta, BorderLayout.WEST);
+        //Acción del botón:
+        vaciarCesta.addActionListener(e -> {
+
+            listaItems.clear();
+        });
+
 
         //Al panel del título, a la izquierda le añado el campo donde introduciremos el teléfono del cliente.
         panelTitulo.add(telefonoCliente, BorderLayout.SOUTH);
@@ -109,10 +117,13 @@ public class VentanaPedido extends JFrame {
         panelCliente.add(datosCliente);
         datosCliente.setFont(new Font("Arial", Font.BOLD, 20));
 
+        /*
+        A partir de aquí, el panel donde se van a visualizar las pizzas
+         */
+
         //Cargo desde la base de datos los productos de tipo pizza y los ordeno alfabéticamente.
         List<Producto> listaPizzas = obtenerPizzas();
         listaPizzas.sort(Comparator.comparing(Producto::getNombre));
-
 
         //Creo el panel que va a ir en la parte central
         //que tendrá dos partes, una para pizzas y otra para el resto de productos
@@ -126,7 +137,6 @@ public class VentanaPedido extends JFrame {
         //Titulo del panel de las pizzas
         JLabel tituloPizzas = new JLabel("PIZZAS", SwingConstants.CENTER);
         panelPizzas.add(tituloPizzas, BorderLayout.NORTH);
-
 
         //En la parte central del panel de las pizzas creo un layout de tipo cuadrícula para
         //ir añadiendo cada pizza con los botones correspondientes para añadirlas al pedido.
@@ -247,30 +257,9 @@ public class VentanaPedido extends JFrame {
             });
         }
 
-        cesta.addActionListener(e -> {
-
-            VentanaCesta vc = new VentanaCesta();
-            vc.setVisible(true);
-/*
-            StringBuilder sb = new StringBuilder("Resumen del pedido").append("\n");
-
-            for (Item lista : listaItems) {
-
-                sb.append(lista.verDetalle()).append("\n");
-            }
-
-            JOptionPane.showMessageDialog(VentanaPedido.this,
-                    sb.toString(),
-                    "Resumen del pedido",
-                    JOptionPane.INFORMATION_MESSAGE);
-
- */
-        });
-
-        vaciarCesta.addActionListener(e -> {
-
-            listaItems.clear();
-        });
+        /*
+        Hasta aquí es rellenar la parte central de los productos tipo pizza
+         */
 
         //Creo el panel de las hamburguesas, pero en realidad aquí van a ir todos los productos que no sean pizzas
         //Se va a ir rellenando desde la base de datos, además teniendo en cuenta.
@@ -282,8 +271,10 @@ public class VentanaPedido extends JFrame {
         JLabel tituloHamburguesas = new JLabel("HAMBURGUESAS", SwingConstants.CENTER);
         panelHamburguesas.add(tituloHamburguesas);
 
+        //Todos los productos que no son pizzas todavía se tienen que añadir a la BBDD y a su panel
     }
 
+    //Configuración de la VentanaPedido
     private void configurarVentana() {
 
         contenedor = getContentPane();
@@ -296,15 +287,9 @@ public class VentanaPedido extends JFrame {
         setResizable(true);
         setVisible(true);
 
-        Toolkit tk = Toolkit.getDefaultToolkit();
-
-        Dimension d = tk.getScreenSize();
-
-        int alto = d.height;
-        int ancho = d.width;
-
     }
 
+    //Obtengo todas las pizzas de la base de datos para luego poder mostrarlas en la ventana
     private List<Producto> obtenerPizzas() {
 
         ProductoRepositorio pr = new ProductoRepositorio();
@@ -312,10 +297,14 @@ public class VentanaPedido extends JFrame {
         return pr.listar("pizza");
     }
 
+    //Obtengo el cliente de la BBDD búscándolo por el teléfono y lo coloco en la parte superior derecha
+    //mostrándo sus datos: nombre, teléfono y dirección
     public void pintarCliente() {
 
         String telefono = telefonoCliente.getText();
 
+        //Si el teléfono que nos proporciona el cliente no existe, habilitará un botón
+        //que al pulsarlo abrirá la ventana VentanaAgregarCliente
         JButton botonAgregarClienteNuevo = new JButton("Nuevo cliente");
         panelCliente.add(botonAgregarClienteNuevo);
         botonAgregarClienteNuevo.setVisible(false);
@@ -323,14 +312,13 @@ public class VentanaPedido extends JFrame {
 
             VentanaAgregarCliente vac = new VentanaAgregarCliente();
             vac.setVisible(true);
-
         });
 
+        //Creo una instancia vacía de cliente
         Cliente cliente = new Cliente();
 
+        //Si el teléfono insertado tiene formato válido se buscará en la base de datos
         if (Validar.validarNumeroTelefono(telefono)) {
-
-            botonAgregarClienteNuevo.setVisible(false);
 
             boolean telefonoEncontrado = false;
 
@@ -356,18 +344,20 @@ public class VentanaPedido extends JFrame {
                 System.out.println(sql.getMessage());
             }
 
+            //Si encuentra el teléfono, se mostrarán los datos en la parte superior derecha.
             if (telefonoEncontrado) {
                 datosCliente.setText(cliente.verDetalle());
                 datosCliente.setBackground(Color.GRAY);
-                botonAgregarClienteNuevo.setVisible(false);
+                //Si no existe en al base de datos, obtendremos el mensaje oportuno
             } else {
                 datosCliente.setText("El teléfono no está registrado");
 
+                //Y se habilitará el botón agregar nuevo cliente.
                 botonAgregarClienteNuevo.setVisible(true);
-
             }
-            // botonAgregarClienteNuevo.setVisible(false);
 
+            //Mientras no haya nada escrito o no tenga el formato correcto,
+            //no se mostrará nada en la ventana correspondiente
         } else {
 
             datosCliente.setText("");
@@ -375,6 +365,7 @@ public class VentanaPedido extends JFrame {
         }
     }
 
+    //Calculo el total del ticket
     private float calcularTotal(List<Item> lista) {
 
         float total = 0f;
@@ -386,20 +377,24 @@ public class VentanaPedido extends JFrame {
         return total;
     }
 
+    //Implemento una ventana con el resumen del tiket y un botón para confirmar el pedido
     private class VentanaCesta extends JFrame {
 
+        //Creo los atributos necesarios
         Pizzeria pizzeria = new Pizzeria();
         Cliente cliente = obtenerCliente();
         JPanel panelCesta = new JPanel(new BorderLayout());
         JTextPane texto = new JTextPane();
         JButton confirmarPedido = new JButton("Confirmar pedido");
 
+        //Añado configuración y componentes
         public VentanaCesta() {
 
             configurarVentana();
             agrearComponenetes();
         }
 
+        //Configuración de la ventana
         private void configurarVentana() {
 
             setTitle("Pizzería!!");
@@ -417,6 +412,7 @@ public class VentanaPedido extends JFrame {
             setBounds(ancho / 3, 10, 500, 500);
         }
 
+        //Creo y doy funcionalidad a los componentes de la ventana
         private void agrearComponenetes() {
 
             //Añadimos el panel donde se escribirá el ticket
@@ -472,7 +468,7 @@ public class VentanaPedido extends JFrame {
                 }
 
                 //Una vez insertado el pedido, insertaremos los items con el id de ese pedido.
-                int idPedido = obtenerIdPeido(fechaFormateada);
+                int idPedido = obtenerIdPedido(fechaFormateada);
 
                 //Como pueden ser varios los items, lo haremos con un bucle for:
                 for (int i = 0; i < listaItems.size(); i++) {
@@ -487,24 +483,24 @@ public class VentanaPedido extends JFrame {
                                     "VALUES (?,?,?,?,?,?)";
 
                     //Se ejecuta la sentencia
-                    try(PreparedStatement ps = Database.conectar().prepareStatement(sentenciaItem)){
+                    try (PreparedStatement ps = Database.conectar().prepareStatement(sentenciaItem)) {
 
                         //Id del producto, lo hemos sacado con el método obtenerIdProducto
                         ps.setInt(1, id);
                         //Tamaño, lo obtenemos de la lista de items. si no tuviera tamaño (si no es pizza), quedará en null
-                        ps.setString(2,String.valueOf(listaItems.get(i).getTamanio()));
+                        ps.setString(2, String.valueOf(listaItems.get(i).getTamanio()));
                         //Precio unitario, lo obtenemos de la lista de items.
-                        ps.setFloat(3,listaItems.get(i).getPrecio());
+                        ps.setFloat(3, listaItems.get(i).getPrecio());
                         //Cantidad, lo obtenemos de la lista de items.
                         ps.setFloat(4, listaItems.get(i).getCantidad());
                         //Total del item, lo obtenemos multiplicando el precio del item por la cantidad del item
                         ps.setFloat(5, (listaItems.get(i).getPrecio() * listaItems.get(i).getCantidad()));
                         //Por último agregamos el id del pedido al que está asociado el item.
-                        ps.setInt(6,idPedido);
+                        ps.setInt(6, idPedido);
 
                         int resultado = ps.executeUpdate();
 
-                    }catch (SQLException sql){
+                    } catch (SQLException sql) {
                         JOptionPane.showMessageDialog(
                                 VentanaPedido.this,
                                 "No se pudieron inesrtar",
@@ -515,11 +511,11 @@ public class VentanaPedido extends JFrame {
 
                 telefonoCliente.setText("");
                 listaItems.clear();
-
-
             });
         }
 
+        //Este metodo nos dará la información del tiket, desde los datos de la pizzeria y del cliente
+        //hasta cada item y el valor del total.
         private String obtenerTiket(Cliente cliente, Pizzeria pizzeria) {
 
             DecimalFormat df = new DecimalFormat("#.##");
@@ -548,12 +544,19 @@ public class VentanaPedido extends JFrame {
             return sb.toString();
         }
 
+        //Obtengo el cliente desde la base de datos
+
+        /*
+        El método obtener cliente habría que sacarlo a un método externo, ya que se utiliza dos veces
+        prácticamente de la misma manera en estas dos ventanas.
+         */
         private Cliente obtenerCliente() {
 
             String telefono = telefonoCliente.getText();
 
             Cliente cliente = new Cliente();
 
+            //Si el telefono tiene formato válido, lo buscaremos en la BBDD
             if (Validar.validarNumeroTelefono(telefono)) {
 
                 String sentencia = "SELECT nombre, telefono, direccion FROM cliente WHERE telefono = ?";
@@ -566,6 +569,7 @@ public class VentanaPedido extends JFrame {
 
                     while (rs.next()) {
 
+                        //Damos a la instancia de cliente sus datos
                         cliente = new Cliente(
                                 rs.getString("nombre"),
                                 rs.getString("telefono"),
@@ -580,6 +584,10 @@ public class VentanaPedido extends JFrame {
         }
     }
 
+    //Obtenemos de la BBDD el id del cliente.
+    //Este solo lo tenemos en la BBDD por lo que no podemos obtenerlos de la clase
+    //Si el cliente no está en la base de datos y no quiere dar sus datos,
+    //El id quedará como 0 y contará como "Clientes no registrados" a la hora de hacer estadísticas.
     private int obtenerIdCliente(Cliente cliente) {
 
         int idCliente = 0;
@@ -603,7 +611,8 @@ public class VentanaPedido extends JFrame {
         return idCliente;
     }
 
-    private int obtenerIdPeido(String fecha) {
+    //Igual que con el cliente, tenemos que obtenerlo de la BBDD
+    private int obtenerIdPedido(String fecha) {
 
         int id = 0;
 
@@ -626,7 +635,8 @@ public class VentanaPedido extends JFrame {
         return id;
     }
 
-    private int obtenerIdProducto(Producto producto){
+    //Debe obtenerse de nuevo de la base de datos.
+    private int obtenerIdProducto(Producto producto) {
 
         int id = 0;
 

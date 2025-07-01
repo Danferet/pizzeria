@@ -13,6 +13,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -40,13 +43,11 @@ public class VentanaPedido extends JFrame {
         agregarComponentes();
     }
 
-    private void agregarParteDeArriba(){
+    private void agregarParteDeArriba() {
 
     }
 
     private void agregarComponentes() {
-
-
 
 
         //Parte de arriba
@@ -111,8 +112,6 @@ public class VentanaPedido extends JFrame {
         //Cargo desde la base de datos los productos de tipo pizza y los ordeno alfabéticamente.
         List<Producto> listaPizzas = obtenerPizzas();
         listaPizzas.sort(Comparator.comparing(Producto::getNombre));
-
-
 
 
         //Creo el panel que va a ir en la parte central
@@ -320,7 +319,7 @@ public class VentanaPedido extends JFrame {
         JButton botonAgregarClienteNuevo = new JButton("Nuevo cliente");
         panelCliente.add(botonAgregarClienteNuevo);
         botonAgregarClienteNuevo.setVisible(false);
-        botonAgregarClienteNuevo.addActionListener( e->{
+        botonAgregarClienteNuevo.addActionListener(e -> {
 
             VentanaAgregarCliente vac = new VentanaAgregarCliente();
             vac.setVisible(true);
@@ -367,9 +366,9 @@ public class VentanaPedido extends JFrame {
                 botonAgregarClienteNuevo.setVisible(true);
 
             }
-           // botonAgregarClienteNuevo.setVisible(false);
+            // botonAgregarClienteNuevo.setVisible(false);
 
-        }else{
+        } else {
 
             datosCliente.setText("");
             botonAgregarClienteNuevo.setVisible(false);
@@ -387,20 +386,19 @@ public class VentanaPedido extends JFrame {
         return total;
     }
 
-
     private class VentanaCesta extends JFrame {
 
         Pizzeria pizzeria = new Pizzeria();
         Cliente cliente = obtenerCliente();
-        JPanel panelCesta = new JPanel(null);
+        JPanel panelCesta = new JPanel(new BorderLayout());
         JTextPane texto = new JTextPane();
+        JButton confirmarPedido = new JButton("Confirmar pedido");
 
         public VentanaCesta() {
 
             configurarVentana();
             agrearComponenetes();
         }
-
 
         private void configurarVentana() {
 
@@ -416,22 +414,110 @@ public class VentanaPedido extends JFrame {
             int alto = d.height;
             int ancho = d.width;
 
-            setBounds(ancho / 3, 10, 500, 1000);
-
+            setBounds(ancho / 3, 10, 500, 500);
         }
 
         private void agrearComponenetes() {
 
+            //Añadimos el panel donde se escribirá el ticket
             add(panelCesta);
 
+            //Creo un TextPane donde se irán agregando las líneas del tiket
             texto = new JTextPane();
-            texto.setBounds(0, 0, 500, 800);
 
-            panelCesta.add(texto);
+            //Se añade el TextPane al panel y se le da una posición
+            panelCesta.add(texto, BorderLayout.CENTER);
+            texto.setBounds(0, 0, 500, 500);
 
+            //Agregamos al texto los datos del cliente y de la propia pizzería
             texto.setText(obtenerTiket(cliente, pizzeria));
 
+            //añado al panel el botón de confirmar pedido
+            panelCesta.add(confirmarPedido, BorderLayout.SOUTH);
 
+            //Al pulsar en este botón, se insertarán en la base de datos el pedido y cada item asociado al pedido
+            //El pedido tendrá el id del cliente, la fecha y el total del ticket.
+            //Los items tendrán los atributos necesarios más el id del pedido.
+            confirmarPedido.addActionListener(e -> {
+
+                //Obtengo la hora, le doy formato español y lo paso a String
+                LocalDateTime ahora = LocalDateTime.now();
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                String fechaFormateada = dtf.format(ahora);
+
+                //Creo un objeto pedido con los datos que tenemos del cliente, la fecha y el total del tiket
+                Pedido pedido = new Pedido(cliente, fechaFormateada, calcularTotal(listaItems));
+
+                //Necesitaremos el id del cliente para la base de datos
+                int idCliente = obtenerIdCliente(cliente);
+
+                //Sentencia para insertar en la BBDD el nuevo pedido
+                String sentencia = "INSERT INTO pedido (id_cliente, fecha, total) VALUES (?,?,?)";
+
+                //Se ejecuta la sentencia
+                try (PreparedStatement ps = Database.conectar().prepareStatement(sentencia)) {
+
+                    ps.setInt(1, idCliente);
+                    ps.setString(2, pedido.getFecha());
+                    ps.setFloat(3, pedido.getTotal());
+
+                    int resultado = ps.executeUpdate();
+
+                } catch (SQLException sql) {
+                    JOptionPane.showMessageDialog(
+                            VentanaPedido.this,
+                            "No se pudo insertar el pedido",
+                            "Error de pedido",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+                //Una vez insertado el pedido, insertaremos los items con el id de ese pedido.
+                int idPedido = obtenerIdPeido(fechaFormateada);
+
+                //Como pueden ser varios los items, lo haremos con un bucle for:
+                for (int i = 0; i < listaItems.size(); i++) {
+
+                    //Obtendo el id de cada producto en el item, ya que lo necesitaré para obtener diferentes cosas
+                    //Como el nombre del producto, su precio...
+                    int id = obtenerIdProducto(listaItems.get(i).getProducto());
+
+                    //la sentencia de inserción
+                    String sentenciaItem =
+                            "INSERT INTO item (id_producto, tamanio, precio, cantidad, precioTotal, id_pedido) " +
+                                    "VALUES (?,?,?,?,?,?)";
+
+                    //Se ejecuta la sentencia
+                    try(PreparedStatement ps = Database.conectar().prepareStatement(sentenciaItem)){
+
+                        //Id del producto, lo hemos sacado con el método obtenerIdProducto
+                        ps.setInt(1, id);
+                        //Tamaño, lo obtenemos de la lista de items. si no tuviera tamaño (si no es pizza), quedará en null
+                        ps.setString(2,String.valueOf(listaItems.get(i).getTamanio()));
+                        //Precio unitario, lo obtenemos de la lista de items.
+                        ps.setFloat(3,listaItems.get(i).getPrecio());
+                        //Cantidad, lo obtenemos de la lista de items.
+                        ps.setFloat(4, listaItems.get(i).getCantidad());
+                        //Total del item, lo obtenemos multiplicando el precio del item por la cantidad del item
+                        ps.setFloat(5, (listaItems.get(i).getPrecio() * listaItems.get(i).getCantidad()));
+                        //Por último agregamos el id del pedido al que está asociado el item.
+                        ps.setInt(6,idPedido);
+
+                        int resultado = ps.executeUpdate();
+
+                    }catch (SQLException sql){
+                        JOptionPane.showMessageDialog(
+                                VentanaPedido.this,
+                                "No se pudieron inesrtar",
+                                "Error de items",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+                telefonoCliente.setText("");
+                listaItems.clear();
+
+
+            });
         }
 
         private String obtenerTiket(Cliente cliente, Pizzeria pizzeria) {
@@ -492,5 +578,74 @@ public class VentanaPedido extends JFrame {
             }
             return cliente;
         }
+    }
+
+    private int obtenerIdCliente(Cliente cliente) {
+
+        int idCliente = 0;
+
+        String sentencia = "SELECT id FROM cliente where telefono = ?";
+
+        try (PreparedStatement ps = Database.conectar().prepareStatement(sentencia)) {
+
+            ps.setString(1, cliente.getTelefono());
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                idCliente = rs.getInt("id");
+            }
+
+        } catch (SQLException sql) {
+            System.out.println(sql.getMessage());
+        }
+        return idCliente;
+    }
+
+    private int obtenerIdPeido(String fecha) {
+
+        int id = 0;
+
+        String sentencia = "SELECT id FROM pedido WHERE fecha = ?";
+
+        try (PreparedStatement ps = Database.conectar().prepareStatement(sentencia)) {
+
+            ps.setString(1, fecha);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                id = rs.getInt("id");
+            }
+
+        } catch (SQLException sql) {
+            System.out.println(sql.getMessage());
+        }
+        return id;
+    }
+
+    private int obtenerIdProducto(Producto producto){
+
+        int id = 0;
+
+        String sentencia = "SELECT id FROM producto WHERE nombre = ?";
+
+        try (PreparedStatement ps = Database.conectar().prepareStatement(sentencia)) {
+
+            ps.setString(1, producto.getNombre());
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                id = rs.getInt("id");
+            }
+
+        } catch (SQLException sql) {
+            System.out.println(sql.getMessage());
+        }
+        return id;
     }
 }

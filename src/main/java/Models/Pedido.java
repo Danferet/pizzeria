@@ -1,31 +1,15 @@
 package Models;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
 public class Pedido {
 
-    private Pizzeria pizzeria;
     private Cliente cliente;
-
-    /*
-    Creo que el producto debería estar relacionado con el item,
-    que tiene un producto, una cantidad, precio del producto y precio total (precio * cantidad)
-    Seguidamente el "Pedido" estaría relacionado con los items, teniendo una lista de estos últimos.
-    También tendrá relación con el cliente, apareciendo el cliente en la factura o ticket
-     */
-
-    private List<Item> listaItems;
     private float total;
-    private LocalDateTime ldt = LocalDateTime.now();
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
+    private String fecha;
 
-    public Pedido(Cliente cliente) {
+    public Pedido(Cliente cliente, String fecha, float total) {
         this.cliente = cliente;
-        this.listaItems = new ArrayList<>();
-        this.ldt = LocalDateTime.now();
-        total = 0.0f;
+        this.fecha = fecha;
+        this.total = total;
     }
 
     public Cliente getCliente() {
@@ -36,22 +20,6 @@ public class Pedido {
         this.cliente = cliente;
     }
 
-    public Pizzeria getPizzeria() {
-        return pizzeria;
-    }
-
-    public void setPizzeria(Pizzeria pizzeria) {
-        this.pizzeria = pizzeria;
-    }
-
-    public List<Item> getListaItems() {
-        return listaItems;
-    }
-
-    public void setListaItems(List<Item> listaItems) {
-        this.listaItems = listaItems;
-    }
-
     public float getTotal() {
         return total;
     }
@@ -60,36 +28,18 @@ public class Pedido {
         this.total = total;
     }
 
-    public LocalDateTime getLdt() {
-        return ldt;
+    public String getFecha() {
+        return fecha;
     }
 
-    public void setLdt(LocalDateTime ldt) {
-        this.ldt = ldt;
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
     }
 
-    public void addItem(Item item){
+    public String verDetalle() {
 
-        listaItems.add(item);
-
-    }
-
-    public String verDetalle(){
-
-
-
-        StringBuilder sb = new StringBuilder(pizzeria.verDetalle()).
-                append("\n").
-                append(cliente.verDetalle()).
+        StringBuilder sb = new StringBuilder(cliente.verDetalle()).
                 append("\n\n");
-
-        for(int i = 0; i<listaItems.size();i++){
-
-            sb.append(listaItems.get(i).verDetalle())
-                    .append("\n");
-
-            total += listaItems.get(i).getTotal();
-        }
 
         sb.append("\n")
                 .append("Total factura: ")
@@ -97,8 +47,17 @@ public class Pedido {
                 .append("€");
 
         sb.append("\n").append("Hora del pedido: ")
-                .append(ldt.format(formatter));
+                .append(fecha);
 
         return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "cliente=" + cliente +
+                ", total=" + total +
+                ", fecha='" + fecha + '\'' +
+                '}';
     }
 }

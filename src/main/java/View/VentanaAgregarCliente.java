@@ -160,6 +160,9 @@ public class VentanaAgregarCliente extends JFrame {
 
                 //Utilizo el método crear de la clas ClienteRepositorio para introducir el cliente
                 cr.crear(cliente);
+                nombre.setText("");
+                telefono.setText("");
+                direccion.setText("");
 
             //Si alguna de las condiciones no es true:
             } else {
